@@ -91,6 +91,21 @@ print("|cFF00FF00NicCopyTooltip:|r Buttons created. Step 5.")
 -- ─── Keybind Handler (OnKeyDown — bypasses Bindings.xml execution) ───────────
 -- Bindings.xml registers the binding name in the UI; this frame handles the press.
 
+-- Track which keys are bound to our action, refreshed on any binding change
+local boundKeys = {}
+local function UpdateBoundKeys()
+    wipe(boundKeys)
+    local k1, k2 = GetBindingKey("NICCOPYTOOLTIP_COPY")
+    if k1 then boundKeys[k1:upper()] = true end
+    if k2 then boundKeys[k2:upper()] = true end
+    print("|cFF00FF00NicCopyTooltip:|r Bound keys: " .. tostring(k1) .. ", " .. tostring(k2))
+end
+
+local bindEventFrame = CreateFrame("Frame")
+bindEventFrame:RegisterEvent("UPDATE_BINDINGS")
+bindEventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+bindEventFrame:SetScript("OnEvent", UpdateBoundKeys)
+
 local keyHandlerFrame = CreateFrame("Frame", nil, UIParent)
 keyHandlerFrame:SetFrameStrata("TOOLTIP")
 keyHandlerFrame:SetAllPoints(UIParent)
@@ -98,13 +113,14 @@ keyHandlerFrame:Show()
 keyHandlerFrame:EnableKeyboard(true)
 keyHandlerFrame:SetPropagateKeyboardInput(true)
 keyHandlerFrame:SetScript("OnKeyDown", function(self, key)
+    print("|cFF00FF00NCT key:|r " .. key)  -- debug: fires on every keypress
     local modifier = ""
     if IsShiftKeyDown()   then modifier = "SHIFT-"  .. modifier end
     if IsControlKeyDown() then modifier = "CTRL-"   .. modifier end
     if IsAltKeyDown()     then modifier = "ALT-"    .. modifier end
 
-    local action = GetBindingAction(modifier .. key)
-    if action == "NICCOPYTOOLTIP_COPY" then
+    local fullKey = (modifier .. key):upper()
+    if boundKeys[fullKey] then
         self:SetPropagateKeyboardInput(false)
         NicCopyTooltip_ShowPopup()
     else
