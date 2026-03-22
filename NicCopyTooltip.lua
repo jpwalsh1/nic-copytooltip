@@ -92,6 +92,9 @@ print("|cFF00FF00NicCopyTooltip:|r Buttons created. Step 5.")
 -- Bindings.xml registers the binding name in the UI; this frame handles the press.
 
 local keyHandlerFrame = CreateFrame("Frame", nil, UIParent)
+keyHandlerFrame:SetSize(0, 0)
+keyHandlerFrame:SetPoint("CENTER")
+keyHandlerFrame:Show()  -- must be shown to receive keyboard events
 keyHandlerFrame:EnableKeyboard(true)
 keyHandlerFrame:SetPropagateKeyboardInput(true)
 keyHandlerFrame:SetScript("OnKeyDown", function(self, key)
@@ -100,7 +103,10 @@ keyHandlerFrame:SetScript("OnKeyDown", function(self, key)
     if IsControlKeyDown() then modifier = "CTRL-"   .. modifier end
     if IsAltKeyDown()     then modifier = "ALT-"    .. modifier end
 
-    local action = GetBindingAction(modifier .. key)
+    local fullKey = modifier .. key
+    local action = GetBindingAction(fullKey)
+    print("|cFF00FF00NicCopyTooltip:|r KeyDown: " .. fullKey .. " => " .. tostring(action))
+
     if action == "NICCOPYTOOLTIP_COPY" then
         self:SetPropagateKeyboardInput(false)
         NicCopyTooltip_ShowPopup()
@@ -140,9 +146,10 @@ local function CaptureTooltip(tooltip)
     local _, itemLink = tooltip:GetItem()
     if not itemLink then return end
 
-    -- Debug: print raw color code so we can verify the rarity map
+    -- Debug: print raw item link and extracted color code
+    print("|cFF00FF00NicCopyTooltip:|r Raw link: [" .. itemLink:sub(1, 60) .. "]")
     local rawColor = itemLink:match("|c(%x%x%x%x%x%x%x%x)|H") or "NO_MATCH"
-    print("|cFF00FF00NicCopyTooltip:|r Link color code: " .. rawColor)
+    print("|cFF00FF00NicCopyTooltip:|r Color code: " .. rawColor)
 
     local lines = {}
     table.insert(lines, "ITEM_LINK: " .. itemLink)
