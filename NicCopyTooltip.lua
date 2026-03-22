@@ -88,13 +88,28 @@ closeBtn:SetScript("OnClick", function() popup:Hide() end)
 
 print("|cFF00FF00NicCopyTooltip:|r Buttons created. Step 5.")
 
--- ─── Hidden Key Button (keybind clicks this) ─────────────────────────────────
+-- ─── Keybind Handler (OnKeyDown — bypasses Bindings.xml execution) ───────────
+-- Bindings.xml registers the binding name in the UI; this frame handles the press.
 
-local keyButton = CreateFrame("Button", "NicCopyTooltipKeyButton", UIParent)
-keyButton:RegisterForClicks("AnyDown")
-keyButton:SetScript("OnClick", function() NicCopyTooltip_ShowPopup() end)
+local keyHandlerFrame = CreateFrame("Frame", nil, UIParent)
+keyHandlerFrame:EnableKeyboard(true)
+keyHandlerFrame:SetPropagateKeyboardInput(true)
+keyHandlerFrame:SetScript("OnKeyDown", function(self, key)
+    local modifier = ""
+    if IsShiftKeyDown()   then modifier = "SHIFT-"  .. modifier end
+    if IsControlKeyDown() then modifier = "CTRL-"   .. modifier end
+    if IsAltKeyDown()     then modifier = "ALT-"    .. modifier end
 
-print("|cFF00FF00NicCopyTooltip:|r Key button created. Step 5b.")
+    local action = GetBindingAction(modifier .. key)
+    if action == "NICCOPYTOOLTIP_COPY" then
+        self:SetPropagateKeyboardInput(false)
+        NicCopyTooltip_ShowPopup()
+    else
+        self:SetPropagateKeyboardInput(true)
+    end
+end)
+
+print("|cFF00FF00NicCopyTooltip:|r Key handler created. Step 5b.")
 
 -- ─── Rarity Lookup ───────────────────────────────────────────────────────────
 
@@ -124,6 +139,10 @@ local cachedItemString = nil
 local function CaptureTooltip(tooltip)
     local _, itemLink = tooltip:GetItem()
     if not itemLink then return end
+
+    -- Debug: print raw color code so we can verify the rarity map
+    local rawColor = itemLink:match("|c(%x%x%x%x%x%x%x%x)|H") or "NO_MATCH"
+    print("|cFF00FF00NicCopyTooltip:|r Link color code: " .. rawColor)
 
     local lines = {}
     table.insert(lines, "ITEM_LINK: " .. itemLink)
