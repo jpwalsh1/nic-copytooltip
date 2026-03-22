@@ -88,20 +88,21 @@ closeBtn:SetPoint("BOTTOMRIGHT", -12, 12)
 closeBtn:SetText("Close")
 closeBtn:SetScript("OnClick", function() popup:Hide() end)
 
--- ─── Tooltip Capture ──────────────────────────────────────────────────────────
+-- ─── Tooltip Cache ────────────────────────────────────────────────────────────
+-- Capture item data on hover so the keybind can use it even after the
+-- tooltip has already dismissed (pressing a key hides the tooltip first).
 
-local function BuildItemString()
+local cachedItemString = nil
+
+local function CaptureTooltip(tooltip)
+    local _, itemLink = tooltip:GetItem()
+    if not itemLink then return end
+
     local lines = {}
+    table.insert(lines, "ITEM_LINK: " .. itemLink)
+    table.insert(lines, string.rep("-", 40))
 
-    -- Item link (contains itemID, bonus IDs, gem sockets, etc.)
-    local _, itemLink = GameTooltip:GetItem()
-    if itemLink then
-        table.insert(lines, "ITEM_LINK: " .. itemLink)
-        table.insert(lines, string.rep("-", 40))
-    end
-
-    -- All visible tooltip lines (left and right columns)
-    for i = 1, GameTooltip:NumLines() do
+    for i = 1, tooltip:NumLines() do
         local left  = _G["GameTooltipTextLeft"  .. i]
         local right = _G["GameTooltipTextRight" .. i]
 
@@ -121,31 +122,24 @@ local function BuildItemString()
         end
     end
 
-    return table.concat(lines, "\n")
+    cachedItemString = table.concat(lines, "\n")
 end
+
+-- Hook every item tooltip show event so we always have fresh cached data
+GameTooltip:HookScript("OnTooltipSetItem", CaptureTooltip)
 
 -- ─── Main Entry Point (called by keybind) ────────────────────────────────────
 
 function NicCopyTooltip_ShowPopup()
-    if not GameTooltip:IsShown() then
-        UIErrorsFrame:AddMessage("Nic Copy Tooltip: Hover over an item first.", 1, 0.5, 0, 1)
+    if not cachedItemString then
+        UIErrorsFrame:AddMessage("Nic Copy Tooltip: Hover over an item first.", 1, 0.5, 0, 1.5)
         return
     end
 
-    local _, itemLink = GameTooltip:GetItem()
-    if not itemLink then
-        UIErrorsFrame:AddMessage("Nic Copy Tooltip: No item found under cursor.", 1, 0.5, 0, 1)
-        return
-    end
-
-    local itemString = BuildItemString()
-
-    -- Populate the editbox
-    editBox:SetText(itemString)
+    editBox:SetText(cachedItemString)
     editBox:SetCursorPosition(0)
 
-    -- Auto-copy so it's ready immediately
-    CopyToClipboard(itemString)
+    CopyToClipboard(cachedItemString)
     copyBtn:SetText("Copied!")
     C_Timer.After(2, function() copyBtn:SetText("Copy to Clipboard") end)
 
