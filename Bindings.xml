@@ -1,0 +1,5 @@
+<Bindings>
+    <Binding name="NICCOPYTOOLTIP_COPY" header="NICCOPYTOOLTIP" runOnUp="false">
+        NicCopyTooltip_ShowPopup()
+    </Binding>
+</Bindings>
