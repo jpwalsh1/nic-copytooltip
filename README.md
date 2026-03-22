@@ -29,7 +29,7 @@ A World of Warcraft addon and Discord bot system that lets players share item to
 ## Project Structure (planned)
 
 ```
-nic-copytooltip/        # This repo — WoW addon source
+NicCopyTooltip/         # WoW addon source (folder must be named exactly this)
 discord-bot/            # Discord bot + tooltip renderer (separate repo or subfolder, TBD)
 ```
 
