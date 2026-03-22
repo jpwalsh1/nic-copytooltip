@@ -4,8 +4,8 @@
 
 local ADDON_NAME = "NicCopyTooltip"
 
--- Keybinding labels shown in the WoW Keybindings UI
-BINDING_HEADER_NICCOPYTOOLTIP = "Nic Copy Tooltip"
+-- Keybinding labels shown in the WoW Keybindings UI (header must match Bindings.xml)
+BINDING_HEADER_NicCopyTooltip = "NicCopyTooltip"
 BINDING_NAME_NICCOPYTOOLTIP_COPY = "Copy Hovered Item"
 
 -- ─── Popup Frame ─────────────────────────────────────────────────────────────
@@ -132,7 +132,7 @@ GameTooltip:HookScript("OnTooltipSetItem", CaptureTooltip)
 
 function NicCopyTooltip_ShowPopup()
     if not cachedItemString then
-        UIErrorsFrame:AddMessage("Nic Copy Tooltip: Hover over an item first.", 1, 0.5, 0, 1.5)
+        print("|cFFFF6600NicCopyTooltip:|r Hover over an item first, then press your keybind.")
         return
     end
 
@@ -146,3 +146,7 @@ function NicCopyTooltip_ShowPopup()
     popup:Show()
     popup:SetPoint("CENTER")
 end
+
+-- Slash command fallback: /nct
+SLASH_NICCOPYTOOLTIP1 = "/nct"
+SlashCmdList["NICCOPYTOOLTIP"] = NicCopyTooltip_ShowPopup
