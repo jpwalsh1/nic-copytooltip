@@ -5,7 +5,7 @@
 print("|cFF00FF00NicCopyTooltip:|r Addon loaded. Step 1.")
 
 -- Keybinding labels shown in the WoW Keybindings UI
-BINDING_HEADER_NicCopyTooltip = "NicCopyTooltip"
+BINDING_HEADER_NICCOPYTOOLTIP = "NicCopyTooltip"
 BINDING_NAME_NICCOPYTOOLTIP_COPY = "Copy Hovered Item"
 
 -- ─── Popup Frame ─────────────────────────────────────────────────────────────
@@ -88,6 +88,35 @@ closeBtn:SetScript("OnClick", function() popup:Hide() end)
 
 print("|cFF00FF00NicCopyTooltip:|r Buttons created. Step 5.")
 
+-- ─── Hidden Key Button (keybind clicks this) ─────────────────────────────────
+
+local keyButton = CreateFrame("Button", "NicCopyTooltipKeyButton", UIParent)
+keyButton:RegisterForClicks("AnyDown")
+keyButton:SetScript("OnClick", function() NicCopyTooltip_ShowPopup() end)
+
+print("|cFF00FF00NicCopyTooltip:|r Key button created. Step 5b.")
+
+-- ─── Rarity Lookup ───────────────────────────────────────────────────────────
+
+local RARITY_BY_COLOR = {
+    ["ff9d9d9d"] = "Poor",
+    ["ffffffff"] = "Common",
+    ["ff1eff00"] = "Uncommon",
+    ["ff0070dd"] = "Rare",
+    ["ffa335ee"] = "Epic",
+    ["ffff8000"] = "Legendary",
+    ["ffe6cc80"] = "Artifact",
+    ["ff00ccff"] = "Heirloom",
+}
+
+local function GetRarityFromLink(itemLink)
+    local colorCode = itemLink:match("|c(%x%x%x%x%x%x%x%x)|H")
+    if colorCode then
+        return RARITY_BY_COLOR[colorCode:lower()] or "Unknown"
+    end
+    return "Unknown"
+end
+
 -- ─── Tooltip Cache ────────────────────────────────────────────────────────────
 
 local cachedItemString = nil
@@ -98,6 +127,7 @@ local function CaptureTooltip(tooltip)
 
     local lines = {}
     table.insert(lines, "ITEM_LINK: " .. itemLink)
+    table.insert(lines, "RARITY: " .. GetRarityFromLink(itemLink))
     table.insert(lines, string.rep("-", 40))
 
     for i = 1, tooltip:NumLines() do
