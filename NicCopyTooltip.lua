@@ -92,9 +92,9 @@ print("|cFF00FF00NicCopyTooltip:|r Buttons created. Step 5.")
 -- Bindings.xml registers the binding name in the UI; this frame handles the press.
 
 local keyHandlerFrame = CreateFrame("Frame", nil, UIParent)
-keyHandlerFrame:SetSize(0, 0)
-keyHandlerFrame:SetPoint("CENTER")
-keyHandlerFrame:Show()  -- must be shown to receive keyboard events
+keyHandlerFrame:SetFrameStrata("TOOLTIP")
+keyHandlerFrame:SetAllPoints(UIParent)
+keyHandlerFrame:Show()
 keyHandlerFrame:EnableKeyboard(true)
 keyHandlerFrame:SetPropagateKeyboardInput(true)
 keyHandlerFrame:SetScript("OnKeyDown", function(self, key)
@@ -103,10 +103,7 @@ keyHandlerFrame:SetScript("OnKeyDown", function(self, key)
     if IsControlKeyDown() then modifier = "CTRL-"   .. modifier end
     if IsAltKeyDown()     then modifier = "ALT-"    .. modifier end
 
-    local fullKey = modifier .. key
-    local action = GetBindingAction(fullKey)
-    print("|cFF00FF00NicCopyTooltip:|r KeyDown: " .. fullKey .. " => " .. tostring(action))
-
+    local action = GetBindingAction(modifier .. key)
     if action == "NICCOPYTOOLTIP_COPY" then
         self:SetPropagateKeyboardInput(false)
         NicCopyTooltip_ShowPopup()
@@ -119,21 +116,21 @@ print("|cFF00FF00NicCopyTooltip:|r Key handler created. Step 5b.")
 
 -- ─── Rarity Lookup ───────────────────────────────────────────────────────────
 
-local RARITY_BY_COLOR = {
-    ["ff9d9d9d"] = "Poor",
-    ["ffffffff"] = "Common",
-    ["ff1eff00"] = "Uncommon",
-    ["ff0070dd"] = "Rare",
-    ["ffa335ee"] = "Epic",
-    ["ffff8000"] = "Legendary",
-    ["ffe6cc80"] = "Artifact",
-    ["ff00ccff"] = "Heirloom",
+local QUALITY_NAMES = {
+    [0] = "Poor",
+    [1] = "Common",
+    [2] = "Uncommon",
+    [3] = "Rare",
+    [4] = "Epic",
+    [5] = "Legendary",
+    [6] = "Artifact",
+    [7] = "Heirloom",
 }
 
 local function GetRarityFromLink(itemLink)
-    local colorCode = itemLink:match("|c(%x%x%x%x%x%x%x%x)|H")
-    if colorCode then
-        return RARITY_BY_COLOR[colorCode:lower()] or "Unknown"
+    local _, _, quality = GetItemInfo(itemLink)
+    if quality then
+        return QUALITY_NAMES[quality] or "Unknown"
     end
     return "Unknown"
 end
@@ -145,11 +142,6 @@ local cachedItemString = nil
 local function CaptureTooltip(tooltip)
     local _, itemLink = tooltip:GetItem()
     if not itemLink then return end
-
-    -- Debug: print raw item link and extracted color code
-    print("|cFF00FF00NicCopyTooltip:|r Raw link: [" .. itemLink:sub(1, 60) .. "]")
-    local rawColor = itemLink:match("|c(%x%x%x%x%x%x%x%x)|H") or "NO_MATCH"
-    print("|cFF00FF00NicCopyTooltip:|r Color code: " .. rawColor)
 
     local lines = {}
     table.insert(lines, "ITEM_LINK: " .. itemLink)

@@ -1,5 +1,6 @@
 <Bindings>
     <Binding name="NICCOPYTOOLTIP_COPY" header="NICCOPYTOOLTIP" runOnUp="false">
-        NicCopyTooltipKeyButton:Click()
+        print("NicCopyTooltip: binding fired!")
+        NicCopyTooltip_ShowPopup()
     </Binding>
 </Bindings>
