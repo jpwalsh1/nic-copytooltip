@@ -123,7 +123,12 @@ local function CaptureTooltip(tooltip)
     print("|cFF00FF00NicCopyTooltip:|r Item cached: " .. (select(2, tooltip:GetItem()) or "unknown"))
 end
 
-GameTooltip:HookScript("OnTooltipSetItem", CaptureTooltip)
+-- WoW Midnight replaced OnTooltipSetItem with TooltipDataProcessor
+if TooltipDataProcessor then
+    TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, CaptureTooltip)
+else
+    GameTooltip:HookScript("OnTooltipSetItem", CaptureTooltip)
+end
 
 print("|cFF00FF00NicCopyTooltip:|r Tooltip hook set. Step 6.")
 
