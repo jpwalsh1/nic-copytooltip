@@ -1,51 +1,50 @@
-# Nic Copy Tooltip
+# NicCopyTooltip
 
-A World of Warcraft addon and Discord bot system that lets players share item tooltips as rich, in-game-style rendered images.
-
----
-
-## Project Goals
-
-### WoW Addon — Nic Copy Tooltip
-- Add a UI button or keybind that opens a copy box when hovering over any item (in bags, equipment, loot windows, etc.)
-- The copy box will contain the full item detail string, including item name, quality/rarity, stats, flavor text, and other relevant tooltip data
-- Make it easy for players to copy this string with one click
-
-### Discord Bot
-- Accept a pasted item detail string from a user in any channel
-- Parse the item string and extract key identifiers
-- Query the Wowhead API to retrieve additional item metadata (icon, set bonuses, source, etc.)
-- Render a tooltip image that visually matches the in-game item tooltip (correct border color for rarity, stat layout, icons, etc.)
-- Reply to the user's message with the rendered tooltip image, replacing or supplementing the raw text paste
-
-### Tooltip Renderer
-- Faithfully recreate the WoW tooltip visual style using item data
-- Support item quality border colors (Poor, Common, Uncommon, Rare, Epic, Legendary, etc.)
-- Render item name, type, stats, flavor text, sell price, and other tooltip fields
-- Output as a clean PNG or similar image format
+A World of Warcraft addon that captures a full item tooltip as plain text and presents it in a copyable popup — useful for sharing item details anywhere outside the game.
 
 ---
 
-## Project Structure (planned)
+## What it does
 
-```
-NicCopyTooltip/         # WoW addon source (folder must be named exactly this)
-discord-bot/            # Discord bot + tooltip renderer (separate repo or subfolder, TBD)
-```
+Hover over any item (in your bags, equipment slots, loot windows, the auction house, etc.) and trigger the addon with your keybind or the slash command `/nct`. A popup appears with the complete tooltip text, pre-selected and ready to copy.
 
----
-
-## Tech Stack (planned)
-
-| Component | Tech |
-|---|---|
-| WoW Addon | Lua, WoW API |
-| Discord Bot | Node.js or Python |
-| Tooltip Rendering | Canvas / Pillow / Sharp |
-| Item Data | Wowhead API / Blizzard Battle.net API |
+The output includes the item link, rarity, and all tooltip lines with color codes stripped, formatted as plain text.
 
 ---
 
-## Status
+## Installation
 
-> Early planning phase. Addon scaffolding in progress.
+1. Download `NicCopyTooltip.zip` from the [latest release](../../releases/latest)
+2. Unzip it — you will get a `NicCopyTooltip` folder
+3. Place the `NicCopyTooltip` folder in your `World of Warcraft/_retail_/Interface/AddOns/` directory
+4. Launch or reload WoW (`/reload`)
+
+---
+
+## Usage
+
+1. Hover your mouse over any item
+2. Press your configured keybind **or** type `/nct`
+3. The popup opens with the tooltip text already highlighted
+4. Press **Ctrl+C** (or **Cmd+C** on Mac) to copy, then paste wherever you like
+5. Click **Close** or press **Escape** to dismiss
+
+---
+
+## Setting your keybind
+
+1. Open **Game Menu → Key Bindings** (or press **Escape → Key Bindings**)
+2. Scroll to the **NicCopyTooltip** section near the bottom
+3. Click the binding slot and press your preferred key combination
+
+---
+
+## Requirements
+
+- World of Warcraft 12.x (interface version 120001)
+
+---
+
+## Version
+
+See [Releases](../../releases) for the current version and changelog.
