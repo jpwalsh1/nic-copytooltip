@@ -124,6 +124,7 @@ end
 local cachedItemString = nil
 
 local function CaptureTooltip(tooltip)
+    if not tooltip.GetItem then return end
     local _, itemLink = tooltip:GetItem()
     if not itemLink then return end
 
@@ -132,9 +133,10 @@ local function CaptureTooltip(tooltip)
     table.insert(lines, "RARITY: " .. GetRarityFromLink(itemLink))
     table.insert(lines, string.rep("-", 40))
 
+    local tooltipName = tooltip:GetName()
     for i = 1, tooltip:NumLines() do
-        local left  = _G["GameTooltipTextLeft"  .. i]
-        local right = _G["GameTooltipTextRight" .. i]
+        local left  = _G[tooltipName .. "TextLeft"  .. i]
+        local right = _G[tooltipName .. "TextRight" .. i]
 
         local leftText  = (left  and left:GetText())  or ""
         local rightText = (right and right:GetText()) or ""
