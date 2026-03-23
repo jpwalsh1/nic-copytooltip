@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-addon-zip:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to upload release assets
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build NicCopyTooltip.zip
+        run: |
+          mkdir NicCopyTooltip
+          cp NicCopyTooltip.lua NicCopyTooltip.toc Bindings.xml NicCopyTooltip/
+          zip -r NicCopyTooltip.zip NicCopyTooltip/
+
+      - name: Upload release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" \
+            NicCopyTooltip.zip --clobber
