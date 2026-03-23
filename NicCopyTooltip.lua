@@ -4,7 +4,7 @@
 
 -- Keybinding labels shown in the WoW Keybindings UI
 BINDING_HEADER_NICCOPYTOOLTIP = "NicCopyTooltip"
-BINDING_NAME_NICCOPYTOOLTIP_COPY = "Copy Hovered Item"
+BINDING_NAME_NICCOPYTOOLTIP_COPY = "NicCopyTooltip"
 
 -- ─── Popup Frame ─────────────────────────────────────────────────────────────
 
