@@ -123,13 +123,33 @@ end
 
 local cachedItemString = nil
 
-local function CaptureTooltip(tooltip)
-    if not tooltip.GetItem then return end
-    local _, itemLink = tooltip:GetItem()
+local function CaptureTooltip(tooltip, data)
+    -- In WoW 12.x, data.hyperlink is the full item hyperlink and data.id is the item ID.
+    -- Fall back to tooltip:GetItem() for older API versions.
+    local itemLink
+    local itemId = data and data.id
+
+    if data and data.hyperlink and data.hyperlink:find("|Hitem:") then
+        itemLink = data.hyperlink
+    elseif tooltip.GetItem then
+        local _, link = tooltip:GetItem()
+        if link and link:find("|Hitem:") then
+            itemLink = link
+        end
+    end
+
+    -- Last resort: reconstruct the hyperlink from the item ID via GetItemInfo
+    if not itemLink and itemId then
+        itemLink = select(2, GetItemInfo(itemId))
+    end
+
     if not itemLink then return end
 
     local lines = {}
     table.insert(lines, "ITEM_LINK: " .. itemLink)
+    if itemId then
+        table.insert(lines, "ITEM_ID: " .. itemId)
+    end
     table.insert(lines, "RARITY: " .. GetRarityFromLink(itemLink))
     table.insert(lines, string.rep("-", 40))
 
