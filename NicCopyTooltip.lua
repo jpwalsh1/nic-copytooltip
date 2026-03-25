@@ -129,11 +129,11 @@ local function CaptureTooltip(tooltip, data)
     local itemLink
     local itemId = data and data.id
 
-    if data and data.hyperlink and data.hyperlink:find("|Hitem:") then
+    if data and data.hyperlink and string.find(data.hyperlink, "|Hitem:", 1, true) then
         itemLink = data.hyperlink
     elseif tooltip.GetItem then
         local _, link = tooltip:GetItem()
-        if link and link:find("|Hitem:") then
+        if link and string.find(link, "|Hitem:", 1, true) then
             itemLink = link
         end
     end
@@ -161,8 +161,8 @@ local function CaptureTooltip(tooltip, data)
         local leftText  = (left  and left:GetText())  or ""
         local rightText = (right and right:GetText()) or ""
 
-        leftText  = leftText:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
-        rightText = rightText:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+        leftText  = string.gsub(string.gsub(leftText,  "|c%x%x%x%x%x%x%x%x", ""), "|r", "")
+        rightText = string.gsub(string.gsub(rightText, "|c%x%x%x%x%x%x%x%x", ""), "|r", "")
 
         if leftText ~= "" and rightText ~= "" then
             table.insert(lines, leftText .. "  " .. rightText)
