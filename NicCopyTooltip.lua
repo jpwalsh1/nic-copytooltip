@@ -153,23 +153,46 @@ local function CaptureTooltip(tooltip, data)
     table.insert(lines, "RARITY: " .. GetRarityFromLink(itemLink))
     table.insert(lines, string.rep("-", 40))
 
-    local tooltipName = tooltip:GetName()
-    for i = 1, tooltip:NumLines() do
-        local left  = _G[tooltipName .. "TextLeft"  .. i]
-        local right = _G[tooltipName .. "TextRight" .. i]
+    -- Use data.lines (WoW 12.x TooltipDataProcessor) for taint-free text.
+    -- GetText() on font strings returns secret/tainted strings in WoW 12.x
+    -- that cannot be used with gsub or string concatenation.
+    local dataLines = data and data.lines
+    if dataLines then
+        for i = 1, #dataLines do
+            local leftText  = dataLines[i].leftText  or ""
+            local rightText = dataLines[i].rightText or ""
 
-        local leftText  = (left  and left:GetText())  or ""
-        local rightText = (right and right:GetText()) or ""
+            leftText  = string.gsub(string.gsub(leftText,  "|c%x%x%x%x%x%x%x%x", ""), "|r", "")
+            rightText = string.gsub(string.gsub(rightText, "|c%x%x%x%x%x%x%x%x", ""), "|r", "")
 
-        leftText  = string.gsub(string.gsub(leftText,  "|c%x%x%x%x%x%x%x%x", ""), "|r", "")
-        rightText = string.gsub(string.gsub(rightText, "|c%x%x%x%x%x%x%x%x", ""), "|r", "")
+            if leftText ~= "" and rightText ~= "" then
+                table.insert(lines, leftText .. "  " .. rightText)
+            elseif leftText ~= "" then
+                table.insert(lines, leftText)
+            elseif rightText ~= "" then
+                table.insert(lines, rightText)
+            end
+        end
+    else
+        -- Fallback for older API versions without data.lines
+        local tooltipName = tooltip:GetName()
+        for i = 1, tooltip:NumLines() do
+            local left  = _G[tooltipName .. "TextLeft"  .. i]
+            local right = _G[tooltipName .. "TextRight" .. i]
 
-        if leftText ~= "" and rightText ~= "" then
-            table.insert(lines, leftText .. "  " .. rightText)
-        elseif leftText ~= "" then
-            table.insert(lines, leftText)
-        elseif rightText ~= "" then
-            table.insert(lines, rightText)
+            local leftText  = (left  and left:GetText())  or ""
+            local rightText = (right and right:GetText()) or ""
+
+            leftText  = string.gsub(string.gsub(leftText,  "|c%x%x%x%x%x%x%x%x", ""), "|r", "")
+            rightText = string.gsub(string.gsub(rightText, "|c%x%x%x%x%x%x%x%x", ""), "|r", "")
+
+            if leftText ~= "" and rightText ~= "" then
+                table.insert(lines, leftText .. "  " .. rightText)
+            elseif leftText ~= "" then
+                table.insert(lines, leftText)
+            elseif rightText ~= "" then
+                table.insert(lines, rightText)
+            end
         end
     end
 
