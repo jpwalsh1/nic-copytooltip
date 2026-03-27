@@ -2,6 +2,8 @@
 -- Hover over any item and press your keybind (or type /nct) to open a
 -- popup with the full tooltip text. Select all and Ctrl+C / Cmd+C to copy.
 
+local ADDON_VERSION = "1.0.21"
+
 -- Keybinding labels shown in the WoW Keybindings UI
 BINDING_HEADER_NICCOPYTOOLTIP = "NicCopyTooltip"
 BINDING_NAME_NICCOPYTOOLTIP_COPY = "NicCopyTooltip"
@@ -146,6 +148,7 @@ local function CaptureTooltip(tooltip, data)
     if not itemLink then return end
 
     local lines = {}
+    table.insert(lines, "VERSION: " .. ADDON_VERSION)
     table.insert(lines, "ITEM_LINK: " .. itemLink)
     if itemId then
         table.insert(lines, "ITEM_ID: " .. itemId)
