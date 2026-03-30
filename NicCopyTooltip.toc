@@ -1,7 +1,8 @@
 ## Interface: 120001
 ## Title: Nic Copy Tooltip
 ## Notes: Hover over any item and press your keybind to copy its full tooltip details for use with the Discord bot.
-## Version: 1.0.22
+## Version: 1.0.23
 ## Author: Jim Walsh
+## X-Wago-ID: kNM32qKz
 
 NicCopyTooltip.lua
