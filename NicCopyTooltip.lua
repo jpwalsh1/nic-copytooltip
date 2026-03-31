@@ -2,7 +2,7 @@
 -- Hover over any item and press your keybind (or type /nct) to open a
 -- popup with the full tooltip text. Select all and Ctrl+C / Cmd+C to copy.
 
-local ADDON_VERSION = "1.0.23"
+local ADDON_VERSION = "1.0.24"
 
 -- Keybinding labels shown in the WoW Keybindings UI
 BINDING_HEADER_NICCOPYTOOLTIP = "NicCopyTooltip"
@@ -111,10 +111,11 @@ local QUALITY_NAMES = {
     [5] = "Legendary",
     [6] = "Artifact",
     [7] = "Heirloom",
+    [8] = "WoW Token",
 }
 
 local function GetRarityFromLink(itemLink)
-    local _, _, quality = GetItemInfo(itemLink)
+    local _, _, quality = C_Item.GetItemInfo(itemLink)
     if quality then
         return QUALITY_NAMES[quality] or "Unknown"
     end
@@ -142,7 +143,7 @@ local function CaptureTooltip(tooltip, data)
 
     -- Last resort: reconstruct the hyperlink from the item ID via GetItemInfo
     if not itemLink and itemId then
-        itemLink = select(2, GetItemInfo(itemId))
+        itemLink = select(2, C_Item.GetItemInfo(itemId))
     end
 
     if not itemLink then return end
@@ -165,6 +166,11 @@ local function CaptureTooltip(tooltip, data)
             local leftText  = dataLines[i].leftText  or ""
             local rightText = dataLines[i].rightText or ""
 
+            -- In WoW 12.x the sell price line is a secret value object, not a string.
+            -- string.gsub on a secret value throws a LUA error; skip those lines.
+            if type(leftText)  ~= "string" then leftText  = "" end
+            if type(rightText) ~= "string" then rightText = "" end
+
             leftText  = string.gsub(string.gsub(leftText,  "|c%x%x%x%x%x%x%x%x", ""), "|r", "")
             rightText = string.gsub(string.gsub(rightText, "|c%x%x%x%x%x%x%x%x", ""), "|r", "")
 
@@ -185,6 +191,9 @@ local function CaptureTooltip(tooltip, data)
 
             local leftText  = (left  and left:GetText())  or ""
             local rightText = (right and right:GetText()) or ""
+
+            if type(leftText)  ~= "string" then leftText  = "" end
+            if type(rightText) ~= "string" then rightText = "" end
 
             leftText  = string.gsub(string.gsub(leftText,  "|c%x%x%x%x%x%x%x%x", ""), "|r", "")
             rightText = string.gsub(string.gsub(rightText, "|c%x%x%x%x%x%x%x%x", ""), "|r", "")
