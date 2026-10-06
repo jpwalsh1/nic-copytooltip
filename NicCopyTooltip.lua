@@ -2,7 +2,10 @@
 -- Hover over any item and press your keybind (or type /nct) to open a
 -- popup with the full tooltip text. Select all and Ctrl+C / Cmd+C to copy.
 
-local ADDON_VERSION = "1.0.24"
+local ADDON_VERSION = "1.0.25"
+
+-- Classic clients may lack C_Item.GetItemInfo; fall back to the global.
+local GetItemInfo = (C_Item and C_Item.GetItemInfo) or GetItemInfo
 
 -- Keybinding labels shown in the WoW Keybindings UI
 BINDING_HEADER_NICCOPYTOOLTIP = "NicCopyTooltip"
@@ -115,7 +118,7 @@ local QUALITY_NAMES = {
 }
 
 local function GetRarityFromLink(itemLink)
-    local _, _, quality = C_Item.GetItemInfo(itemLink)
+    local _, _, quality = GetItemInfo(itemLink)
     if quality then
         return QUALITY_NAMES[quality] or "Unknown"
     end
@@ -143,10 +146,15 @@ local function CaptureTooltip(tooltip, data)
 
     -- Last resort: reconstruct the hyperlink from the item ID via GetItemInfo
     if not itemLink and itemId then
-        itemLink = select(2, C_Item.GetItemInfo(itemId))
+        itemLink = select(2, GetItemInfo(itemId))
     end
 
     if not itemLink then return end
+
+    -- The legacy OnTooltipSetItem hook passes no data, so read the ID from the link.
+    if not itemId then
+        itemId = tonumber(string.match(itemLink, "|Hitem:(%d+)"))
+    end
 
     local lines = {}
     table.insert(lines, "VERSION: " .. ADDON_VERSION)
@@ -211,9 +219,14 @@ local function CaptureTooltip(tooltip, data)
     cachedItemString = table.concat(lines, "\n")
 end
 
-if TooltipDataProcessor then
+-- Retail fires TooltipDataProcessor callbacks. Classic clients (Era, Mists,
+-- TBC Anniversary, WoW Forever) expose TooltipDataProcessor too, but their item
+-- tooltips only fire the legacy OnTooltipSetItem script, so hook that where it exists.
+if TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall
+    and Enum and Enum.TooltipDataType then
     TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, CaptureTooltip)
-else
+end
+if GameTooltip:HasScript("OnTooltipSetItem") then
     GameTooltip:HookScript("OnTooltipSetItem", CaptureTooltip)
 end
 

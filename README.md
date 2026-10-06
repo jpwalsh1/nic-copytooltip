@@ -16,7 +16,7 @@ The output includes the item link, rarity, and all tooltip lines with color code
 
 1. Download `NicCopyTooltip.zip` from the [latest release](../../releases/latest)
 2. Unzip it — you will get a `NicCopyTooltip` folder
-3. Place the `NicCopyTooltip` folder in your `World of Warcraft/_retail_/Interface/AddOns/` directory
+3. Place the `NicCopyTooltip` folder in the `Interface/AddOns/` directory of your game client (for example `World of Warcraft/_retail_/Interface/AddOns/` or `World of Warcraft/_classic_era_/Interface/AddOns/`)
 4. Launch or reload WoW (`/reload`)
 
 ---
@@ -41,7 +41,15 @@ The output includes the item link, rarity, and all tooltip lines with color code
 
 ## Requirements
 
-- World of Warcraft 12.x (interface version 120001)
+One download works on all of these clients:
+
+| Client | Game version | Interface |
+|---|---|---|
+| Retail | 12.1 | 120100 |
+| Mists of Pandaria Classic | 5.5 | 50504 |
+| Burning Crusade Anniversary | 2.5 | 20506 |
+| Classic Era / Hardcore | 1.15 | 11509 |
+| WoW Forever | 1.60 | 16001 |
 
 ---
 
