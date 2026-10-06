@@ -1,7 +1,7 @@
 ## Interface: 120100, 50504, 20506, 11509, 16001
 ## Title: Nic Copy Tooltip
 ## Notes: Hover over any item and press your keybind to copy its full tooltip details for use with the Discord bot.
-## Version: 1.0.25
+## Version: 1.0.26
 ## Author: Jim Walsh
 ## X-Wago-ID: kNM32qKz
 

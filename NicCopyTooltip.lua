@@ -2,7 +2,7 @@
 -- Hover over any item and press your keybind (or type /nct) to open a
 -- popup with the full tooltip text. Select all and Ctrl+C / Cmd+C to copy.
 
-local ADDON_VERSION = "1.0.25"
+local ADDON_VERSION = "1.0.26"
 
 -- Classic clients may lack C_Item.GetItemInfo; fall back to the global.
 local GetItemInfo = (C_Item and C_Item.GetItemInfo) or GetItemInfo
@@ -158,6 +158,10 @@ local function CaptureTooltip(tooltip, data)
 
     local lines = {}
     table.insert(lines, "VERSION: " .. ADDON_VERSION)
+    -- Game version and interface number tell the bot which client (retail,
+    -- Classic Era, Mists Classic, WoW Forever, ...) the item came from.
+    local gameVersion, _, _, interfaceVersion = GetBuildInfo()
+    table.insert(lines, "CLIENT: " .. gameVersion .. " (" .. interfaceVersion .. ")")
     table.insert(lines, "ITEM_LINK: " .. itemLink)
     if itemId then
         table.insert(lines, "ITEM_ID: " .. itemId)
